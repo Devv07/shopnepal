@@ -19,7 +19,7 @@ SECRET_KEY = 'django-insecure-(ai_wqs%a_$2vbsi3vl8b(8a1v29w-)60vnuaf3ujpt$_)t@%s
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['shopnepal.onrender.com', '127.0.0.1', 'localhost','*']
 
 INSTALLED_APPS = [
     'django.contrib.admin',
