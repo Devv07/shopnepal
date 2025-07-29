@@ -17,7 +17,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = 'django-insecure-(ai_wqs%a_$2vbsi3vl8b(8a1v29w-)60vnuaf3ujpt$_)t@%s'
 
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['shopnepal.onrender.com', '127.0.0.1', 'localhost']
 
