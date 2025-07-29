@@ -1,0 +1,35 @@
+{% extends 'core/base.html' %}
+{% load django_bootstrap5 %}
+{% load static %}
+
+{% block title %}Wishlist - Shop Nepal{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2 class="section-title">Your Wishlist</h2>
+    {% if wishlist_items %}
+    <div class="products-grid">
+        {% for item in wishlist_items %}
+        <div class="product-card">
+            {% if item.product.image and item.product.image.url %}
+            <img src="{{ item.product.image.url }}" class="product-img" alt="{{ item.product.name }}">
+            {% else %}
+            <img src="{% static 'images/placeholder.jpg' %}" class="product-img" alt="{{ item.product.name }}">
+            {% endif %}
+            <div class="product-info">
+                <h3 class="product-title">{{ item.product.name }}</h3>
+                <p class="product-price">
+                    Rs.{{ item.product.discount_price|default:item.product.price|floatformat:2 }}
+                </p>
+                <a href="{% url 'user:add_to_cart' item.product.id %}" class="btn btn-primary">Add to Cart</a>
+                <a href="{% url 'user:remove_from_wishlist' item.id %}" class="btn btn-danger">Remove</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>Your wishlist is empty.</p>
+    {% endif %}
+    <a href="{% url 'user:product_list' %}" class="btn btn-primary">Continue Shopping</a>
+</div><br>
+{% endblock %}

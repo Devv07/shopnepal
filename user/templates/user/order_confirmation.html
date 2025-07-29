@@ -1,0 +1,48 @@
+{% extends 'core/base.html' %}
+{% load django_bootstrap5 %}
+{% load static %}
+
+{% block title %}Order Confirmation - Shop Nepal{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <link rel="stylesheet" href="{% static 'css/order_confirmation.css' %}">
+</head>
+<body>
+    <div class="container">
+    <h2 class="section-title">Order Confirmation</h2>
+    <div class="order-details">
+        <h3>Order #{{ order.id }}</h3>
+        <p>Status: {{ order.get_status_display }}</p>
+        <p>Total: Rs.{{ total_amount|floatformat:2 }}</p>
+        <p>Date: {{ order.created_at|date:"N j, Y, P" }}</p>
+        <div class="order-items">
+            {% for item in cart_data %}
+            <div class="order-item">
+                <div class="order-item-image">
+                    {% if item.product.image and item.product.image.url %}
+                    <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                    {% else %}
+                    <img src="{% static 'images/placeholder.jpg' %}" alt="{{ item.product.name }}">
+                    {% endif %}
+                </div>
+                <div class="order-item-info">
+                    <h4>{{ item.product.name }}</h4>
+                    <p>Quantity: {{ item.quantity }}</p>
+                    <p>Price: Rs.{{ item.price|floatformat:2 }}</p>
+                    <p>Subtotal: Rs.{{ item.subtotal|floatformat:2 }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <a href="{% url 'user:order_history' %}" class="btn btn-primary">View Order History</a>
+    </div>
+</div>
+</body>
+</html>
+{% endblock %}

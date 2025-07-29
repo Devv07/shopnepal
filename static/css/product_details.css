@@ -1,0 +1,248 @@
+
+    /* Product Detail Layout */
+    .row {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0 -15px;
+    }
+
+    .col-md-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+        padding: 0 15px;
+    }
+
+    /* Product Image */
+    .img-fluid {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 15px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+        background: white;
+        padding: 20px;
+    }
+
+    /* Product Info */
+    .product-info {
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+        height: 100%;
+    }
+
+    h2 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+        font-size: 2.5rem;
+        margin-bottom: 15px;
+        color: #2c3e50;
+        position: relative;
+        padding-bottom: 15px;
+    }
+
+    h2::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(90deg, #ff6b6b, #4a6fcb);
+        border-radius: 3px;
+    }
+
+    .product-rating {
+        display: flex;
+        align-items: center;
+        margin-bottom: 25px;
+        color: #ffb400;
+    }
+
+    .product-rating i {
+        margin-right: 5px;
+        font-size: 1.2rem;
+    }
+
+    p {
+        margin-bottom: 20px;
+        font-size: 1.1rem;
+        color: #555;
+        line-height: 1.8;
+    }
+
+    .product-price {
+        font-size: 1.8rem;
+        font-weight: 700;
+        margin-bottom: 25px;
+        color: #2c3e50;
+    }
+
+    .product-price s {
+        font-size: 1.4rem;
+        color: #95a5a6;
+        margin-right: 12px;
+        font-weight: 400;
+    }
+
+    .stock-info, .category-info {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        font-size: 1.1rem;
+        padding: 12px 15px;
+        background: #f8fafc;
+        border-radius: 8px;
+    }
+
+    .stock-info strong, .category-info strong {
+        width: 100px;
+        color: #4a6fcb;
+    }
+
+    .stock-info span {
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    /* Action Buttons */
+    .action-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn {
+        padding: 12px 25px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        border: none;
+    }
+
+    .btn i {
+        margin-right: 8px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(45deg, #4a6fcb, #6a11cb);
+        color: white;
+        box-shadow: 0 5px 15px rgba(106, 17, 203, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(106, 17, 203, 0.4);
+    }
+
+    .btn-outline-primary {
+        background: white;
+        color: #4a6fcb;
+        border: 2px solid #4a6fcb;
+    }
+
+    .btn-outline-primary:hover {
+        background: #f0f4ff;
+        transform: translateY(-3px);
+    }
+
+    .btn-hero {
+        background: linear-gradient(45deg, #ff6b6b, #ff8e53);
+        color: white;
+        padding: 14px 30px;
+        font-size: 1.2rem;
+        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+        flex: 1;
+        min-width: 100%;
+        margin-top: 10px;
+    }
+
+    .btn-hero:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+    }
+
+    .btn-hero i {
+        margin-left: 8px;
+        margin-right: 0;
+    }
+
+    /* Stock Status Indicators */
+    .in-stock {
+        color: #27ae60;
+    }
+
+    .low-stock {
+        color: #f39c12;
+    }
+
+    .out-of-stock {
+        color: #e74c3c;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+        .col-md-6 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+        
+        .col-md-6:first-child {
+            margin-bottom: 30px;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+        }
+        
+        .btn {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .btn-hero {
+            min-width: 100%;
+        }
+    }
+
+    @media (max-width: 576px) {
+        h2 {
+            font-size: 2rem;
+        }
+        
+        .product-price {
+            font-size: 1.6rem;
+        }
+        
+        .btn {
+            padding: 12px 15px;
+            font-size: 1rem;
+        }
+        
+        .btn-hero {
+            padding: 14px 20px;
+            font-size: 1.1rem;
+        }
+    }
+
+    /* Animation Effects */
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .col-md-6:first-child {
+        animation: fadeIn 0.6s ease-out;
+    }
+    
+    .col-md-6:last-child {
+        animation: fadeIn 0.8s ease-out;
+    }

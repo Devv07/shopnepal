@@ -1,0 +1,396 @@
+{% load django_bootstrap5 %}
+{% load static %}
+{% block content %}
+<style>
+    :root {
+        --primary: #007bff;
+        --primary-dark: #0056b3;
+        --secondary: #ff6b6b;
+        --light: #f8f9fa;
+        --dark: #212529;
+        --gray: #6c757d;
+        --light-gray: #e9ecef;
+        --success: #28a745;
+        --warning: #ffc107;
+        --border: #dee2e6;
+        --card-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    .container { display: flex; min-height: 100vh; }
+    .sidebar { width: 250px; background: white; box-shadow: var(--card-shadow); padding: 20px 0; position: fixed; height: 100%; overflow-y: auto; }
+    .logo { padding: 0 20px 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+    .logo h1 { font-size: 1.5rem; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+    .logo i { color: var(--secondary); }
+    .nav-links { list-style: none; padding: 0 15px; }
+    .nav-links li { margin-bottom: 5px; }
+    .nav-links a { display: flex; align-items: center; padding: 12px 15px; text-decoration: none; color: var(--gray); border-radius: 8px; transition: all 0.3s; }
+    .nav-links a:hover, .nav-links a.active { background: rgba(0,123,255,0.1); color: var(--primary); }
+    .nav-links a i { width: 25px; margin-right: 10px; }
+    .main-content { flex: 1; margin-left: 250px; padding: 30px; }
+    .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+    .welcome h2 { font-size: 1.8rem; margin-bottom: 5px; }
+    .welcome p { color: var(--gray); }
+    .user-actions { display: flex; align-items: center; gap: 15px; }
+    .user-actions a { text-decoration: none; color: var(--gray); transition: color 0.3s; }
+    .user-actions a:hover { color: var(--primary); }
+    .user-profile { display: flex; align-items: center; gap: 10px; }
+    .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 30px; }
+    .stat-card { background: white; border-radius: 12px; padding: 20px; box-shadow: var(--card-shadow); display: flex; align-items: center; gap: 15px; }
+    .stat-icon { width: 50px; height: 50px; border-radius: 10px; background: rgba(0,123,255,0.1); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+    .stat-info h3 { font-size: 1.8rem; margin-bottom: 5px; }
+    .stat-info p { color: var(--gray); font-size: 0.9rem; }
+    .section { background: white; border-radius: 12px; box-shadow: var(--card-shadow); margin-bottom: 30px; overflow: hidden; }
+    .section-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .section-header h3 { font-size: 1.3rem; }
+    .section-header a { color: var(--primary); text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 5px; }
+    .section-content { padding: 20px; }
+    .search-bar input { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; }
+    .product-list, .category-list, .order-list { list-style: none; padding: 0; }
+    .product-item, .category-item, .order-item { display: flex; align-items: center; padding: 15px 0; border-bottom: 1px solid var(--border); gap: 15px; }
+    .product-item:last-child, .category-item:last-child, .order-item:last-child { border-bottom: none; }
+    .product-image { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; background: var(--light-gray); }
+    .product-info, .category-info { flex: 1; }
+    .product-name, .category-name { font-weight: 600; margin-bottom: 5px; }
+    .product-price { color: var(--primary); font-weight: 600; }
+    .product-stock { color: var(--gray); font-size: 0.9rem; }
+    .product-stock.low { color: var(--secondary); font-weight: 500; }
+    .product-actions, .category-actions { display: flex; gap: 10px; }
+    .product-actions a, .category-actions a { text-decoration: none; padding: 8px 15px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; transition: all 0.3s; }
+    .edit-btn { background: rgba(0,123,255,0.1); color: var(--primary); }
+    .edit-btn:hover { background: rgba(0,123,255,0.2); }
+    .delete-btn { background: rgba(255,107,107,0.1); color: var(--secondary); }
+    .delete-btn:hover { background: rgba(255,107,107,0.2); }
+    .order-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+    .order-id { font-weight: 600; color: var(--primary); }
+    .order-status { padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; font-weight: 500; }
+    .status-pending { background: rgba(255,152,0,0.1); color: var(--warning); }
+    .status-accepted { background: rgba(40,167,69,0.1); color: var(--success); }
+    .status-completed { background: rgba(40,167,69,0.1); color: var(--success); }
+    .status-canceled { background: rgba(220,53,69,0.1); color: #dc3545; }
+    .items-list { padding-left: 20px; margin: 10px 0; }
+    .item { display: flex; justify-content: space-between; margin-bottom: 5px; }
+    .order-total { font-weight: 600; margin-top: 10px; display: block; }
+    .order-actions { display: flex; justify-content: flex-end; margin-top: 10px; gap: 10px; }
+    .view-details, .action-btn { text-decoration: none; color: var(--primary); font-weight: 500; display: flex; align-items: center; gap: 5px; }
+    .action-btn.accept { color: var(--success); }
+    .action-btn.cancel { color: #dc3545; }
+    .chart-container { max-width: 100%; height: 300px; margin-bottom: 20px; }
+    .alert { padding: 15px; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 15px; }
+    .alert-info { background: rgba(0,123,255,0.1); color: var(--primary); border-left: 4px solid var(--primary); }
+    .alert-warning { background: rgba(255,193,7,0.1); color: var(--warning); border-left: 4px solid var(--warning); }
+    @media (max-width: 992px) {
+        .sidebar { width: 70px; }
+        .sidebar .logo h1 span, .sidebar .nav-links a span { display: none; }
+        .sidebar .logo h1 { justify-content: center; }
+        .sidebar .nav-links a { justify-content: center; }
+        .sidebar .nav-links a i { margin-right: 0; font-size: 1.3rem; }
+        .main-content { margin-left: 70px; }
+    }
+    @media (max-width: 768px) {
+        .stats-grid { grid-template-columns: 1fr; }
+        .header { flex-direction: column; align-items: flex-start; gap: 15px; }
+        .user-actions { width: 100%; justify-content: space-between; }
+        .product-item, .category-item { flex-wrap: wrap; }
+        .product-actions, .category-actions { width: 100%; justify-content: flex-end; margin-top: 10px; }
+    }
+</style>
+<!-- Font Awesome CDN -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+
+<div class="container">
+    {% if not user.is_verified %}
+    <div class="alert alert-warning">
+        <i class="fas fa-exclamation-triangle"></i>
+        <span>Your vendor account is awaiting superadmin verification.</span>
+    </div>
+    {% else %}
+    <aside class="sidebar">
+        <div class="logo">
+            <h1><i class="fas fa-store"></i> <span>Vendor Dashboard</span></h1>
+        </div>
+        <ul class="nav-links">
+            <li><a href="{% url 'vendor:dashboard' %}" class="active"><i class="fas fa-home"></i> <span>Dashboard</span></a></li>
+            <li><a href="{% url 'vendor:add_product' %}"><i class="fas fa-box"></i> <span>Add Product</span></a></li>
+            <li><a href="{% url 'vendor:manage_orders' %}"><i class="fas fa-shopping-cart"></i> <span>Manage Orders</span></a></li>
+            <li><a href="{% url 'vendor:create_category' %}"><i class="fas fa-list"></i> <span>Manage Categories</span></a></li>
+            <li><a href="{% url 'vendor:vendor_profile' %}"><i class="fas fa-user"></i> <span>Profile</span></a></li>
+        </ul>
+    </aside>
+
+    <main class="main-content">
+        <div class="header">
+            <div class="welcome">
+                <h2>Welcome, {{ user.first_name|default:user.email }}!</h2>
+                <p>Manage your products, orders, and categories</p>
+            </div>
+            <div class="user-actions">
+                <a href="{% url 'vendor:vendor_profile' %}"><i class="fas fa-cog"></i></a>
+                <div class="user-profile">
+                    <div class="user-avatar">{{ user.first_name|first|upper|default:user.email|first|upper }}</div>
+                    <a href="{% url 'core:logout' %}">Logout</a>
+                </div>
+            </div>
+        </div>
+
+        {% if low_stock_products %}
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Low stock alert: {% for product in low_stock_products %}{{ product.name }} ({{ product.stock }} left){% if not forloop.last %}, {% endif %}{% endfor %}</span>
+        </div>
+        {% endif %}
+        {% if new_orders %}
+        <div class="alert alert-info">
+            <i class="fas fa-bell"></i>
+            <span>You have {{ new_orders }} new order{{ new_orders|pluralize }}!</span>
+        </div>
+        {% endif %}
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-box"></i></div>
+                <div class="stat-info">
+                    <h3>{{ stats.active_products }}</h3>
+                    <p>Active Products</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-shopping-cart"></i></div>
+                <div class="stat-info">
+                    <h3>{{ stats.total_orders }}</h3>
+                    <p>Total Orders</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-rupee-sign"></i></div>
+                <div class="stat-info">
+                    <h3>Rs.{{ stats.total_revenue|floatformat:2 }}</h3>
+                    <p>Total Revenue</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon"><i class="fas fa-star"></i></div>
+                <div class="stat-info">
+                    <h3>{{ stats.average_rating|floatformat:1 }}</h3>
+                    <p>Average Rating</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <h3>Sales Analytics</h3>
+                <a href="{% url 'vendor:analytics' %}"><i class="fas fa-chart-line"></i> View Full Report</a>
+            </div>
+            <div class="section-content">
+                <div class="chart-container">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <h3>Your Categories</h3>
+                <a href="{% url 'vendor:create_category' %}"><i class="fas fa-plus"></i> Add New Category</a>
+            </div>
+            <div class="section-content">
+                <div class="search-bar mb-3">
+                    <input type="text" id="categorySearch" placeholder="Search categories..." class="form-control">
+                </div>
+                <ul class="category-list">
+                    {% for category in categories %}
+                    <li class="category-item">
+                        <div class="category-info">
+                            <div class="category-name">{{ category.name }}</div>
+                        </div>
+                        <div class="category-actions">
+                            <a href="{% url 'vendor:edit_category' category.id %}" class="edit-btn"><i class="fas fa-edit"></i> Edit</a>
+                            <a href="{% url 'vendor:delete_category' category.id %}" class="delete-btn" onclick="return confirm('Are you sure you want to delete {{ category.name }}?');"><i class="fas fa-trash"></i> Delete</a>
+                        </div>
+                    </li>
+                    {% empty %}
+                    <li class="category-item">No categories available.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <h3>Your Products</h3>
+                <a href="{% url 'vendor:add_product' %}"><i class="fas fa-plus"></i> Add New Product</a>
+            </div>
+            <div class="section-content">
+                <div class="search-bar mb-3">
+                    <input type="text" id="productSearch" placeholder="Search products..." class="form-control">
+                </div>
+                <ul class="product-list">
+                    {% for product in products %}
+                    <li class="product-item">
+                        {% if product.image %}
+                        <img src="{{ product.image.url }}" class="product-image" alt="{{ product.name }}">
+                        {% else %}
+                        <div class="product-image"><i class="fas fa-box"></i></div>
+                        {% endif %}
+                        <div class="product-info">
+                            <div class="product-name">{{ product.name }}</div>
+                            <div class="product-price">Rs.{{ product.price|floatformat:2 }}{% if product.discount_price %} <span style="color: var(--success);">(Discount: Rs.{{ product.discount_price|floatformat:2 }})</span>{% endif %}</div>
+                            <div class="product-stock {% if product.stock <= 5 %}low{% endif %}">Stock: {{ product.stock }}</div>
+                        </div>
+                        <div class="product-actions">
+                            <a href="{% url 'vendor:edit_product' product.id %}" class="edit-btn"><i class="fas fa-edit"></i> Edit</a>
+                            <a href="{% url 'vendor:delete_product' product.id %}" class="delete-btn" onclick="return confirm('Are you sure you want to delete {{ product.name }}?');"><i class="fas fa-trash"></i> Delete</a>
+                        </div>
+                    </li>
+                    {% empty %}
+                    <li class="product-item">No products available.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-header">
+                <h3>Recent Orders</h3>
+                <a href="{% url 'vendor:manage_orders' %}"><i class="fas fa-list"></i> View All Orders</a>
+            </div>
+            <div class="section-content">
+                <div class="search-bar mb-3">
+                    <input type="text" id="orderSearch" placeholder="Search orders by ID or product..." class="form-control">
+                </div>
+                <ul class="order-list">
+                    {% for order in orders %}
+                    <li class="order-item">
+                        <div class="order-header">
+                            <span class="order-id">Order #ORD-{{ order.id }}</span>
+                            <span class="order-status status-{{ order.status }}">{{ order.status|capfirst }}</span>
+                        </div>
+                        <ul class="items-list">
+                            {% for item in order.items.all %}
+                            <li class="item">
+                                <span>{{ item.product.name }} (x{{ item.quantity }})</span>
+                                <span>Rs.{{ item.price|floatformat:2 }}</span>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                        <span class="order-total">Total: Rs.{{ order.total_amount|floatformat:2 }}</span>
+                        <div class="order-actions">
+                            <a href="{% url 'vendor:order_detail' order.id %}" class="view-details"><i class="fas fa-eye"></i> View Details</a>
+                            {% if order.status == 'pending' %}
+                            <a href="{% url 'vendor:accept_order' order.id %}" class="action-btn accept"><i class="fas fa-check"></i> Accept</a>
+                            <a href="{% url 'vendor:cancel_order' order.id %}" class="action-btn cancel"><i class="fas fa-times"></i> Cancel</a>
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% empty %}
+                    <li class="order-item">No orders available.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </main>
+    {% endif %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+{{ stats.sales_data|json_script:"sales-data" }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const salesData = JSON.parse(document.getElementById('sales-data').textContent);
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Revenue',
+                    data: salesData,
+                    borderColor: 'rgba(0,123,255,1)',
+                    backgroundColor: 'rgba(0,123,255,0.2)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Revenue (Rs.)' }
+                    }
+                }
+            }
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const navLinks = document.querySelectorAll('.nav-links a');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                navLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        const productSearch = document.getElementById('productSearch');
+        const categorySearch = document.getElementById('categorySearch');
+        const orderSearch = document.getElementById('orderSearch');
+        const productItems = document.querySelectorAll('.product-item');
+        const categoryItems = document.querySelectorAll('.category-item');
+        const orderItems = document.querySelectorAll('.order-item');
+
+        productSearch.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            productItems.forEach(item => {
+                const name = item.querySelector('.product-name').textContent.toLowerCase();
+                item.style.display = name.includes(query) ? '' : 'none';
+            });
+        });
+
+        categorySearch.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            categoryItems.forEach(item => {
+                const name = item.querySelector('.category-name').textContent.toLowerCase();
+                item.style.display = name.includes(query) ? '' : 'none';
+            });
+        });
+
+        orderSearch.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            orderItems.forEach(item => {
+                const id = item.querySelector('.order-id').textContent.toLowerCase();
+                const product = item.querySelector('.items-list .item span').textContent.toLowerCase();
+                item.style.display = (id.includes(query) || product.includes(query)) ? '' : 'none';
+            });
+        });
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        const salesData = JSON.parse(document.getElementById('sales-data').textContent);
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Revenue',
+                    data: salesData,
+                    borderColor: 'rgba(0,123,255,1)',
+                    backgroundColor: 'rgba(0,123,255,0.2)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Revenue (Rs.)' }
+                    }
+                }
+            }
+        });
+        });
+</script>
+{% endblock %}

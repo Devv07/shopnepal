@@ -1,0 +1,47 @@
+{% extends 'core/base.html' %}
+{% load django_bootstrap5 %}
+{% load static %}
+
+{% block title %}Order Details - Shop Nepal{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <link rel="stylesheet" href="{% static 'css/order.css' %}">
+</head>
+<body>
+    <div class="container">
+    <h2 class="section-title">Order Details</h2>
+    {% if orders %}
+    <div class="order-list">
+        {% for order in orders %}
+        <div class="order-card">
+            <i class="fas fa-box"></i>
+            <h5>Products Name:-</h5>
+            <ul>
+                {% for item in order.items.all %}
+                    <li>{{ item.product.name }} (Qty: {{ item.quantity }})</li>
+                {% endfor %}
+            </ul>
+            <h6>Order : {{ order.id }}</h6>
+            <p>Date: {{ order.created_at|date:"F d, Y" }}</p>
+            <p>Status: {{ order.get_status_display }}</p>
+            <p>Total: Rs.{{ order.total_amount|floatformat:2 }}</p>
+            <a href="{% url 'user:order_detail' order.id %}" class="btn btn-info">View Details</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>No orders found.</p>
+    {% endif %}
+    <br>
+    <a href="{% url 'user:product_list' %}" class="btn btn-primary">Continue Shopping</a>
+</div>
+<br>
+</body>
+</html>
+{% endblock %}

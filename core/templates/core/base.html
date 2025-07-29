@@ -1,0 +1,161 @@
+{% load django_bootstrap5 %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Shop Nepal | Premium Shopping Experience{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Montserrat:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg bg-light shadow-sm">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'core:home' %}">
+                <i class="fas fa-shopping-bag me-2"></i>Shop<span class="text-primary">Nepal</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <div class="search-container mx-auto my-2">
+                    <form action="{% url 'user:product_list' %}" method="GET" class="d-flex">
+                        <input type="text" name="q" class="form-control" placeholder="Search for products, brands and more..." value="{{ request.GET.q|default:'' }}">
+                        <button class="btn btn-outline-primary search-btn" type="submit">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </form>
+                </div>
+                <ul class="navbar-nav ms-auto align-items-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:home' %}"><i class="fas fa-home me-1"></i>Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user:product_list' %}"><i class="fas fa-th me-1"></i>Products</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user:cart' %}">
+                            <i class="fas fa-shopping-cart me-1"></i>Cart
+                            {% if cart_count %}<span class="badge bg-primary rounded-pill">{{ cart_count }}</span>{% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'user:wishlist' %}">
+                            <i class="fas fa-heart me-1"></i>Wishlist
+                            {% if wishlist_count %}<span class="badge bg-primary rounded-pill">{{ wishlist_count }}</span>{% endif %}
+                        </a>
+                    </li>
+                    {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user me-1"></i>{{ user.first_name|default:user.email }}
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="accountDropdown">
+                            <li><a class="dropdown-item" href="{% url 'user:profile' %}">Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'user:order_history' %}">Order History</a></li>
+                            {% if user.role == 'vendor' and user.is_verified %}
+                            <li><a class="dropdown-item" href="{% url 'vendor:dashboard' %}">Vendor Dashboard</a></li>
+                            {% endif %}
+                            {% if user.role == 'superadmin' %}
+                            <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin Dashboard</a></li>
+                            {% endif %}
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'core:logout' %}">Logout</a></li>
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:register' %}">Register</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'core:login' %}">Login</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Categories Navigation -->
+    <div class="nav-categories bg-white shadow-sm">
+        <div class="container">
+            <ul class="category-menu d-flex flex-wrap list-unstyled mb-0">
+            <li><a href="{% url 'user:product_list' %}" {% if not selected_category %}class="active"{% endif %}>All</a></li>
+                {% for category in categories %}
+                <li><a href="{% url 'user:product_list' %}?category={{ category.id }}" class="text-decoration-none">{{ category.name }}</a></li>
+                {% empty %}
+                <li><a href="#" class="text-decoration-none">No categories available</a></li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    {% bootstrap_messages %}
+
+    <!-- Main Content -->
+    {% block content %}
+    {% endblock %}
+
+    <!-- Footer -->
+    <footer class="footer bg-dark text-white py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <h4 class="footer-title">Shop Nepal</h4>
+                    <p>Your one-stop destination for all your shopping needs. Quality products at competitive prices with exceptional customer service.</p>
+                    <div class="social-icons mt-3">
+                        <a href="#" class="social-icon me-2"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon me-2"><i class="fab fa-twitter"></i></a>
+                        <a href="#" class="social-icon me-2"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h4 class="footer-title">Shop</h4>
+                    <ul class="footer-links list-unstyled">
+                        <li><a href="{% url 'user:product_list' %}">All Products</a></li>
+                        <li><a href="{% url 'user:product_list' %}">New Arrivals</a></li>
+                        <li><a href="{% url 'user:product_list' %}">Best Sellers</a></li>
+                        <li><a href="{% url 'user:product_list' %}">Deals & Discounts</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-2 col-md-4 mb-4">
+                    <h4 class="footer-title">Help</h4>
+                    <ul class="footer-links list-unstyled">
+                        <li><a href="{% url 'core:faq' %}">FAQ</a></li>
+                        <li><a href="{% url 'core:shipping_info' %}">Shipping Info</a></li>
+                        <li><a href="{% url 'core:returns' %}">Returns & Exchanges</a></li>
+                        <li><a href="{% url 'core:contact' %}">Contact Us</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-4 mb-4">
+                    <h4 class="footer-title">Newsletter</h4>
+                    <p>Subscribe to get special offers, free giveaways, and new product alerts.</p>
+                    <form action="{% url 'core:newsletter' %}" method="POST" class="input-group mt-3">
+                        {% csrf_token %}
+                        <input type="email" name="email" class="form-control" placeholder="Your email address" required>
+                        <button class="btn btn-primary" type="submit"><i class="fas fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        const authChannel = new BroadcastChannel('auth_channel');
+        authChannel.onmessage = function(event) {
+            if (event.data === 'logout') {
+                window.location.href = "{% url 'core:login' %}";
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

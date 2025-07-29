@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Redirecting to eSewa</title>
+</head>
+<body onload="document.forms['esewa_form'].submit()">
+    <form name="esewa_form" method="POST" action="{{ esewa_url }}">
+        {% for key, value in params.items %}
+        <input type="hidden" name="{{ key }}" value="{{ value }}">
+        {% endfor %}
+        <p>Redirecting to eSewa...</p>
+        <input type="submit" value="Continue to eSewa">
+    </form>
+</body>
+</html>

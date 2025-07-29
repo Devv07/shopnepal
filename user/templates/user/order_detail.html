@@ -1,0 +1,42 @@
+{% extends 'core/base.html' %}
+{% load django_bootstrap5 %}
+{% load static %}
+{% load user_tags %}
+
+{% block title %}Order Details - Shop Nepal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="section-title">Order Details #ORD-{{ order.id }}</h2>
+    <div class="card">
+        <div class="card-body">
+            <p><strong>Status:</strong> {{ order.status|capfirst }}</p>
+            <p><strong>Total Amount:</strong> Rs.{{ order.total_amount|floatformat:2 }}</p>
+            <p><strong>Ordered By:</strong> {{ order.user.email }}</p>
+            <h3>Items</h3>
+            <div class="items-list">
+                {% for item in items %}
+                <div class="order-item d-flex align-items-center mb-3">
+                    <div class="order-item-image">
+                        {% if item.product.image and item.product.image.url %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
+                        {% else %}
+                        <img src="{% static 'images/placeholder.jpg' %}" alt="{{ item.product.name }}" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
+                        {% endif %}
+                    </div>
+                    <div class="order-item-info">
+                        <h4>{{ item.product.name }}</h4>
+                        <p>Quantity: {{ item.quantity }}</p>
+                        <p>Price: Rs.{{ item.price|floatformat:2 }}</p>
+                        <p>Subtotal: Rs.{{ item.quantity|multiply:item.price|floatformat:2 }}</p>
+                    </div>
+                </div>
+                {% empty %}
+                <p>No items found in this order.</p>
+                {% endfor %}
+            </div>
+            <a href="{% url 'user:order_history' %}" class="btn btn-primary">Back to Order History</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

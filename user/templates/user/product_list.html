@@ -1,0 +1,104 @@
+{% extends 'core/base.html' %}
+{% load django_bootstrap5 %}
+{% load static %}
+
+{% block title %}Products - Shop Nepal{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/products.css' %}">
+</head>
+<body>
+    <div class="container">
+    <!-- Products Section -->
+    <h3 class="section-title">Products</h3>
+    <div class="products-grid">
+        {% for product in products %}
+        <div class="product-card fade-in {% cycle 'delay-1' 'delay-2' 'delay-3' '' %}">
+            {% if product.discount_price %}
+            <span class="product-badge">Sale</span>
+            {% endif %}
+            <div class="product-image-wrapper">
+                <a href="{% url 'user:product_detail' product.id %}">
+                    {% if product.image and product.image.url %}
+                    <img src="{{ product.image.url }}" class="product-img" alt="{{ product.name }}">
+                    {% else %}
+                    <img src="{% static 'images/placeholder.jpg' %}" class="product-img" alt="{{ product.name }}">
+                    {% endif %}
+                </a>
+                <div class="product-actions">
+                    {% if user.is_authenticated and user.role == 'user' %}
+                    <form action="{% url 'user:add_to_cart' product.id %}" method="POST" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-icon btn-add-to-cart" {% if product.stock <= 0 %}disabled{% endif %} title="{% if product.stock > 0 %}Add to Cart{% else %}Out of Stock{% endif %}">
+                            <img src="{% static 'images/cart.png' %}" alt="Cart" class="action-icon">
+                        </button>
+                    </form>
+                    <a href="{% url 'user:add_to_wishlist' product.id %}" class="btn btn-icon btn-wishlist" title="Add to Wishlist">
+                        <img src="{% static 'images/heart.png' %}" alt="Wishlist" class="action-icon">
+                    </a>
+                    {% else %}
+                    <a href="{% url 'core:login' %}?next={% url 'user:add_to_cart' product.id %}" class="btn btn-icon btn-add-to-cart" title="Login to Add to Cart">
+                        <img src="{% static 'images/cart.png' %}" alt="Cart" class="action-icon">
+                    </a>
+                    <a href="{% url 'core:login' %}?next={% url 'user:add_to_wishlist' product.id %}" class="btn btn-icon btn-wishlist" title="Login to Add to Wishlist">
+                        <img src="{% static 'images/heart.png' %}" alt="Wishlist" class="action-icon">
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="product-info">
+                <h3 class="product-title">{{ product.name }}</h3>
+                <div class="product-rating">
+                    {% for i in "12345" %}
+                    {% if forloop.counter <= product.average_rating|floatformat:0 %}
+                    <i class="fas fa-star"></i>
+                    {% elif forloop.counter <= product.average_rating|add:0.5|floatformat:0 %}
+                    <i class="fas fa-star-half-alt"></i>
+                    {% else %}
+                    <i class="far fa-star"></i>
+                    {% endif %}
+                    {% endfor %}
+                    ({{ product.average_rating|floatformat:1 }})
+                </div>
+                <div class="product-price">
+                    {% if product.discount_price %}
+                    <s>Rs.{{ product.price|floatformat:2 }}</s> Rs.{{ product.discount_price|floatformat:2 }}
+                    {% else %}
+                    Rs.{{ product.price|floatformat:2 }}
+                    {% endif %}
+                </div>
+                <div class="product-buy-now">
+                    {% if user.is_authenticated and user.role == 'user' %}
+                    <a href="{% url 'user:checkout' %}?product={{ product.id }}&quantity=1" class="btn btn-success btn-buy-now" {% if product.stock <= 0 %}disabled{% endif %}>
+                        <i class="fas fa-bolt me-1"></i> 
+                        {% if product.stock > 0 %}Buy Now{% else %}Out of Stock{% endif %}
+                    </a>
+                    {% else %}
+                    <a href="{% url 'core:login' %}?next={% url 'user:checkout' %}?product={{ product.id }}&quantity=1" class="btn btn-success btn-buy-now">
+                        <i class="fas fa-bolt me-1"></i> Buy Now
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="product-card fade-in">
+            <img src="{% static 'images/placeholder.jpg' %}" class="product-img" alt="No Product">
+            <div class="product-info">
+                <h3 class="product-title">No Products Available</h3>
+                <div class="product-price">Rs 0.00</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+</body>
+</html>
+{% endblock %}

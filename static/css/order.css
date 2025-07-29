@@ -1,0 +1,132 @@
+.section-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #2c3e50;
+    font-weight: 600;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(to right, #3498db, #2c3e50);
+}
+
+.order-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.order-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    border-left: 4px solid #3498db;
+    position: relative;
+    overflow: hidden;
+}
+
+.order-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+}
+
+.order-card h3 {
+    margin-top: 0;
+    color: #2c3e50;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.8rem;
+    margin-bottom: 1rem;
+}
+
+.order-card p {
+    margin: 0.7rem 0;
+    font-size: 1rem;
+    color: #555;
+    display: flex;
+}
+
+.order-card p::before {
+    content: "•";
+    color: #3498db;
+    font-weight: bold;
+    display: inline-block;
+    width: 1.5em;
+    margin-left: -1.5em;
+}
+
+.btn-info {
+    background: #3498db;
+    border: none;
+    margin-top: 1rem;
+    padding: 0.5rem 1.5rem;
+    transition: all 0.3s;
+}
+
+.btn-info:hover {
+    background: #2980b9;
+    transform: scale(1.05);
+}
+
+.btn-primary {
+    display: block;
+    width: fit-content;
+    margin: 2rem auto 0;
+    padding: 0.7rem 2.5rem;
+    background: #2c3e50;
+    border: none;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-primary:hover {
+    background: #1a252f;
+    transform: scale(1.05);
+}
+
+/* Status badges */
+.order-card p:has([class^="status-"]) {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-weight: 500;
+    margin-top: 0.5rem;
+}
+
+.status-pending { background-color: #f39c12; color: white; }
+.status-processing { background-color: #3498db; color: white; }
+.status-completed { background-color: #27ae60; color: white; }
+.status-cancelled { background-color: #e74c3c; color: white; }
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .order-list {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+    }
+}
+
+/* Animation for empty state */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.order-card {
+    animation: fadeIn 0.5s ease-out forwards;
+    animation-delay: calc(var(--order-index) * 0.1s);
+    opacity: 0;
+}

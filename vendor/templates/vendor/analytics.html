@@ -1,0 +1,50 @@
+{% extends 'core/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Analytics - Shop Nepal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="section-title">Sales Analytics</h2>
+    <div class="card">
+        <div class="card-body">
+            <div class="chart-container">
+                <canvas id="salesChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+{{ stats.sales_data|json_script:"sales-data" }}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const salesData = JSON.parse(document.getElementById('sales-data').textContent);
+        const ctx = document.getElementById('salesChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                datasets: [{
+                    label: 'Revenue',
+                    data: salesData,
+                    borderColor: 'rgba(0,123,255,1)',
+                    backgroundColor: 'rgba(0,123,255,0.2)',
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Revenue (Rs.)' }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

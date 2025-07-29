@@ -1,0 +1,108 @@
+{% extends 'core/base.html' %}
+{% load django_bootstrap5 %}
+{% load static %}
+
+{% block title %}Profile - Shop Nepal{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile</title>
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+</head>
+<body>
+    <div class="container py-5">
+    <h2 class="section-title">Your Profile</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <!-- Professional Profile Picture Section -->
+                    <div class="profile-pic-container text-center mb-4">
+                        <div class="profile-pic-wrapper">
+                            {% if form.instance.profile_picture %}
+                                <img id="profilePicPreview" src="{{ form.instance.profile_picture.url }}" 
+                                     alt="Profile Picture" class="profile-pic-preview">
+                            {% else %}
+                                <img id="profilePicPreview" src="{% static 'images/default-profile.png' %}" 
+                                     alt="Default Profile" class="profile-pic-preview">
+                            {% endif %}
+                            <div class="profile-pic-overlay">Click to change</div>
+                        </div>
+                        <label for="id_profile_picture" class="profile-pic-label mt-3">
+                            <i class="bi bi-camera me-1"></i> Update Profile Photo
+                        </label>
+                    </div>
+
+                    <form method="POST" enctype="multipart/form-data" class="pt-2">
+                        {% csrf_token %}
+                        
+                        <!-- Custom file input for better UX -->
+                        <div class="form-group">
+                            <div class="custom-file">
+                                {{ form.profile_picture }}
+                                <label class="custom-file-label" for="id_profile_picture">
+                                    {% if form.instance.profile_picture %}
+                                        {{ form.instance.profile_picture.name|truncatechars:30 }}
+                                    {% else %}
+                                        Select profile picture...
+                                    {% endif %}
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Other form fields -->
+                        {% for field in form %}
+                            {% if field.name != 'profile_picture' %}
+                                {% bootstrap_field field %}
+                            {% endif %}
+                        {% endfor %}
+                        
+                        <button type="submit" class="btn btn-primary mt-4">
+                            <i class="bi bi-check-circle me-2"></i>Update Profile
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for enhanced functionality -->
+<script>
+// Profile picture preview
+document.getElementById('id_profile_picture').addEventListener('change', function(e) {
+    if (this.files && this.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            document.getElementById('profilePicPreview').src = e.target.result;
+        }
+        reader.readAsDataURL(this.files[0]);
+        
+        // Update file label
+        const fileName = this.files[0].name;
+        const label = document.querySelector('.custom-file-label');
+        label.textContent = fileName.length > 30 ? fileName.substring(0, 30) + '...' : fileName;
+    }
+});
+
+// Add focus effect to form groups
+const formGroups = document.querySelectorAll('.form-group');
+formGroups.forEach(group => {
+    const input = group.querySelector('.form-control');
+    if (input) {
+        input.addEventListener('focus', () => {
+            group.classList.add('focused');
+        });
+        input.addEventListener('blur', () => {
+            group.classList.remove('focused');
+        });
+    }
+});
+</script>
+</body>
+</html>
+{% endblock %}

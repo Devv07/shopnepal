@@ -1,0 +1,52 @@
+{% extends 'core/base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}Manage Orders - Shop Nepal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2 class="section-title">Manage Orders</h2>
+    {% if orders %}
+    <div class="order-list">
+        {% for order in orders %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex justify-content-between">
+                    <h5>Order #ORD-{{ order.id }}</h5>
+                    <span class="order-status status-{{ order.status }}">{{ order.status|capfirst }}</span>
+                </div>
+                <ul class="items-list">
+                    {% for item in order.order_items %}
+                    {% if item.product.vendor == user %}
+                    <li class="item d-flex align-items-center">
+                        {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
+                        {% else %}
+                        <img src="/static/images/placeholder.jpg" alt="No Image" style="width: 50px; height: 50px; object-fit: cover; margin-right: 10px;">
+                        {% endif %}
+                        <div class="flex-grow-1">
+                            <span>{{ item.product.name }} (x{{ item.quantity }})</span>
+                            <span>Rs.{{ item.price|floatformat:2 }}</span>
+                            <span>Subtotal: Rs.{{ item.subtotal|floatformat:2 }}</span>
+                        </div>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+                </ul>
+                <p class="order-total">Total: Rs.{{ order.total_amount|floatformat:2 }}</p>
+                <div class="order-actions">
+                    <a href="{% url 'vendor:order_detail' order.id %}" class="view-details"><i class="fas fa-eye"></i> View Details</a>
+                    {% if order.status == 'pending' %}
+                    <a href="{% url 'vendor:accept_order' order.id %}" class="action-btn accept"><i class="fas fa-check"></i> Accept</a>
+                    <a href="{% url 'vendor:cancel_order' order.id %}" class="action-btn cancel"><i class="fas fa-times"></i> Cancel</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>No orders found.</p>
+    {% endif %}
+</div>
+{% endblock %}

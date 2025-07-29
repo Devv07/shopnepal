@@ -1,0 +1,58 @@
+{% extends 'core/base.html' %}
+{% load django_bootstrap5 %}
+{% load static %}
+
+{% block title %}Cart - Shop Nepal{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart</title>
+    <link rel="stylesheet" href="{% static 'css/cart.css' %}">
+</head>
+<body>
+    <div class="container">
+    <h2 class="section-title">Your Cart</h2>
+    {% if cart_data %}
+    <div class="cart-items">
+        {% for data in cart_data %}
+        {% with item=data.item %}
+        <div class="cart-item">
+            <div class="cart-item-image">
+                {% if item.product.image and item.product.image.url %}
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                {% else %}
+                <img src="{% static 'images/placeholder.jpg' %}" alt="{{ item.product.name }}">
+                {% endif %}
+            </div>
+            <div class="cart-item-info">
+                <h3>{{ item.product.name }}</h3>
+                <p>Price: Rs.{{ item.product.discount_price|default:item.product.price|floatformat:2 }}</p>
+                <form method="POST" action="{% url 'user:update_cart' item.id %}">
+                    {% csrf_token %}
+                    <label>Quantity:</label>
+                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.product.stock }}" class="form-control d-inline-block w-auto">
+                    <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                </form>
+                <p>Subtotal: Rs.{{ data.subtotal|floatformat:2 }}</p>
+                <a href="{% url 'user:remove_from_cart' item.id %}" class="btn btn-danger">Remove</a>
+            </div>
+        </div>
+        {% endwith %}
+        {% endfor %}
+    </div>
+    <div class="cart-total">
+        <h3>Total: Rs.{{ total_amount|floatformat:2 }}</h3>
+        <a href="{% url 'user:checkout' %}" class="btn btn-success">Proceed to Checkout</a>
+    </div>
+    {% else %}
+    <p>Your cart is empty.</p>
+    <a href="{% url 'user:product_list' %}" class="btn btn-primary">Continue Shopping</a>
+    {% endif %}
+</div><br>
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends 'core/base.html' %}
+{% load django_bootstrap5 %}
+{% load static %}
+
+{% block title %}Checkout - Shop Nepal{% endblock %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout</title>
+    <link rel="stylesheet" href="{% static 'css/checkout.css' %}">
+</head>
+<body>
+    <div class="container">
+    <h2 class="section-title">Checkout</h2>
+    {% if cart_data %}
+    <div class="order-items">
+        {% for item in cart_data %}
+        <div class="order-item">
+            <div class="order-item-image">
+                {% if item.product.image and item.product.image.url %}
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+                {% else %}
+                <img src="{% static 'images/placeholder.jpg' %}" alt="{{ item.product.name }}">
+                {% endif %}
+            </div>
+            <div class="order-item-info">
+                <h4>{{ item.product.name }}</h4>
+                <p>Quantity: {{ item.quantity }}</p>
+                <p>Price: Rs.{{ item.price|floatformat:2 }}</p>
+                <p>Subtotal: Rs.{{ item.subtotal|floatformat:2 }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="cart-total">
+        <h3>Total: Rs.{{ total_amount|floatformat:2 }}</h3>
+        <form method="POST" action="{% url 'user:place_order' %}">
+            {% csrf_token %}
+            {% if product %}
+            <input type="hidden" name="product" value="{{ product.id }}">
+            <input type="hidden" name="quantity" value="{{ cart_data.0.quantity }}">
+            {% endif %}
+            <div class="form-group">
+                <label>Payment Method:</label>
+                <select name="payment_method" class="form-control w-auto">
+                    <option value="cod">Cash on Delivery</option>
+                    <option value="esewa">eSewa</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success">Place Order</button>
+        </form>
+    </div>
+    {% else %}
+    <p>Your cart is empty.</p>
+    <a href="{% url 'user:product_list' %}" class="btn btn-primary">Continue Shopping</a>
+    {% endif %}
+</div>
+</body>
+</html>
+{% endblock %}
